@@ -40,6 +40,7 @@ pub fn main(init: std.process.Init) !void {
     try fb.fillPolygons(gpa, &.{&poligono2}, .{ .r = 77, .g = 214, .b = 214 });
     fb.drawPolygonOutline(&poligono2, .{ .r = 36, .g = 36, .b = 36 });
 
+    try fb.fillPolygons(gpa, &.{&poligono3}, .{ .r = 77, .g = 214, .b = 214 });
     fb.drawPolygonOutline(&poligono3, .{ .r = 36, .g = 36, .b = 36 });
 
     fb.drawPolygonOutline(&poligono4, .{ .r = 36, .g = 36, .b = 36 });
