@@ -34,12 +34,16 @@ pub fn main(init: std.process.Init) !void {
 
     // Colores de línea distintos por polígono, solo para distinguirlos
     // visualmente en esta prueba.
-    try fb.fillPolygons(gpa, &.{&poligono1}, .{ .r = 128, .g = 128, .b = 117 });
-    fb.drawPolygonOutline(&poligono1, .{ .r = 200, .g = 110, .b = 80 });
-    fb.drawPolygonOutline(&poligono2, .{ .r = 0, .g = 120, .b = 0 });
-    fb.drawPolygonOutline(&poligono3, .{ .r = 217, .g = 102, .b = 88 });
-    fb.drawPolygonOutline(&poligono4, .{ .r = 56, .g = 237, .b = 19 });
-    fb.drawPolygonOutline(&poligono5, .{ .r = 161, .g = 19, .b = 237 });
+    try fb.fillPolygons(gpa, &.{&poligono1}, .{ .r = 77, .g = 214, .b = 214 });
+    fb.drawPolygonOutline(&poligono1, .{ .r = 36, .g = 36, .b = 36 });
+
+    try fb.fillPolygons(gpa, &.{&poligono2}, .{ .r = 77, .g = 214, .b = 214 });
+    fb.drawPolygonOutline(&poligono2, .{ .r = 36, .g = 36, .b = 36 });
+
+    fb.drawPolygonOutline(&poligono3, .{ .r = 36, .g = 36, .b = 36 });
+
+    fb.drawPolygonOutline(&poligono4, .{ .r = 36, .g = 36, .b = 36 });
+    fb.drawPolygonOutline(&poligono5, .{ .r = 224, .g = 30, .b = 22 });
 
     try fb.writeBmp(io, "out.bmp");
 }
