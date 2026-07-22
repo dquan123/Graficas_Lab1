@@ -157,6 +157,64 @@ pub const Framebuffer = struct {
             self.drawLine(p0[0], p0[1], p1[0], p1[1], color);
         }
     }
+
+    /// Rellena uno o más polígonos usando scanline fill con regla par-impar.
+    /// Pasar varios polígonos juntos (para el 4 con agujero) hace que
+    /// el agujero quede sin pintar.
+    pub fn fillPolygons(self: *Framebuffer, allocator: std.mem.Allocator, polygons: []const []const [2]i64, color: Color) !void {
+        var y_min: i64 = std.math.maxInt(i64);
+        var y_max: i64 = std.math.minInt(i64);
+        for (polygons) |poly| {
+            for (poly) |p| {
+                if (p[1] < y_min) y_min = p[1];
+                if (p[1] > y_max) y_max = p[1];
+            }
+        }
+
+        var y = y_min;
+        while (y <= y_max) : (y += 1) {
+            var xs = std.ArrayList(i64).empty;
+            defer xs.deinit(allocator);
+
+            for (polygons) |poly| {
+                var i: usize = 0;
+                while (i < poly.len) : (i += 1) {
+                    const p0 = poly[i];
+                    const p1 = poly[(i + 1) % poly.len];
+                    const y0 = p0[1];
+                    const y1 = p1[1];
+
+                    if (y0 == y1) continue; // aristas horizontales no aportan cruces
+
+                    const y_lo = @min(y0, y1);
+                    const y_hi = @max(y0, y1);
+
+                    // [y_lo, y_hi) evita contar el vértice compartido dos veces
+                    if (y >= y_lo and y < y_hi) {
+                        const x0f: f64 = @floatFromInt(p0[0]);
+                        const y0f: f64 = @floatFromInt(y0);
+                        const x1f: f64 = @floatFromInt(p1[0]);
+                        const y1f: f64 = @floatFromInt(y1);
+                        const yf: f64 = @floatFromInt(y);
+
+                        const xf = x0f + (yf - y0f) * (x1f - x0f) / (y1f - y0f);
+                        try xs.append(allocator, @intFromFloat(@round(xf)));
+                    }
+                }
+            }
+
+            std.mem.sort(i64, xs.items, {}, std.sort.asc(i64));
+
+            var idx: usize = 0;
+            while (idx + 1 < xs.items.len) : (idx += 2) {
+                var x = xs.items[idx];
+                const x_end = xs.items[idx + 1];
+                while (x <= x_end) : (x += 1) {
+                    self.setPixel(x, y, color);
+                }
+            }
+        }
+    }
 };
 
 fn writeU32LE(dest: []u8, value: u32) void {

@@ -34,6 +34,7 @@ pub fn main(init: std.process.Init) !void {
 
     // Colores de línea distintos por polígono, solo para distinguirlos
     // visualmente en esta prueba.
+    try fb.fillPolygons(gpa, &.{&poligono1}, .{ .r = 128, .g = 128, .b = 117 });
     fb.drawPolygonOutline(&poligono1, .{ .r = 200, .g = 110, .b = 80 });
     fb.drawPolygonOutline(&poligono2, .{ .r = 0, .g = 120, .b = 0 });
     fb.drawPolygonOutline(&poligono3, .{ .r = 217, .g = 102, .b = 88 });
