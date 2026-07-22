@@ -116,6 +116,47 @@ pub const Framebuffer = struct {
         try file_writer.interface.writeAll(buf);
         try file_writer.interface.flush();
     }
+
+    /// Dibuja una línea recta entre dos puntos usando el algoritmo de Bresenham.
+    pub fn drawLine(self: *Framebuffer, x0: i64, y0: i64, x1: i64, y1: i64, color: Color) void {
+        var x = x0;
+        var y = y0;
+
+        const dx: i64 = @intCast(@abs(x1 - x0));
+        const dy: i64 = @intCast(@abs(y1 - y0));
+
+        const sx: i64 = if (x0 < x1) 1 else -1;
+        const sy: i64 = if (y0 < y1) 1 else -1;
+
+        var err: i64 = dx - dy;
+
+        while (true) {
+            self.setPixel(x, y, color);
+
+            if (x == x1 and y == y1) break;
+
+            const e2 = 2 * err;
+            if (e2 > -dy) {
+                err -= dy;
+                x += sx;
+            }
+            if (e2 < dx) {
+                err += dx;
+                y += sy;
+            }
+        }
+    }
+
+    /// Dibuja el borde completo de un polígono, conectando cada vértice
+    /// con el siguiente, y cerrando del último punto al primero.
+    pub fn drawPolygonOutline(self: *Framebuffer, points: []const [2]i64, color: Color) void {
+        var i: usize = 0;
+        while (i < points.len) : (i += 1) {
+            const p0 = points[i];
+            const p1 = points[(i + 1) % points.len]; // el % hace que cierre el ciclo
+            self.drawLine(p0[0], p0[1], p1[0], p1[1], color);
+        }
+    }
 };
 
 fn writeU32LE(dest: []u8, value: u32) void {
